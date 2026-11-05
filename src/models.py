@@ -48,26 +48,30 @@ class StudentSystem:
             if not 0 <= score <=100:    
                 print(f"警告：学号 {sid} 的成绩 {score:g} 不在0~100之间，已跳过")
                 continue
+            if sid in self.students:
+                print(f"警告：学号 {sid} 重复，后一条覆盖前一条")
             self.students[sid] = Students(sid,name,score)
         print(f"学生信息加载成功,共 {len(self.students)} 条")
     def max_score(self):    #最高分
         if not self.students:
             print("暂无学生信息")
-            return
+            return None
         max_stu = list(self.students.values())[0]
         for stu in self.students.values():           
             if stu.score > max_stu.score:           
                 max_stu = stu                   
         print(f"最高分:{max_stu}") 
+        return max_stu
     def min_score(self):    #最低分
         if not self.students:
             print("暂无学生信息")
-            return
+            return None
         min_stu = list(self.students.values())[0]
         for stu in self.students.values():
             if stu.score < min_stu.score:
                 min_stu = stu
         print(f"最低分:{min_stu}")
+        return min_stu
     def avg_score(self):    #平均分
         if not self.students:
             print("暂无学生信息")
@@ -76,19 +80,21 @@ class StudentSystem:
         for stu in self.students.values():
             total += stu.score
         print(f"平均分：{total/len(self.students)}") 
+        return total/len(self.students)
     def pass_num(self):     #及格人数
         if not self.students:
             print("暂无学生信息")
-            return 
+            return None
         passnum = 0 
         for stu in self.students.values():
             if stu.score >= 60:
                 passnum += 1
         print(f"考试及格人数:{passnum}")
+        return passnum
     def search_student(self):   #查询学生
         if not self.students:
             print("暂无学生信息")
-            return
+            return None
         stu_id = input("请输入要查询的学生学号：").strip()
         for stu in self.students.values():
             if stu.id == stu_id:
@@ -99,7 +105,7 @@ class StudentSystem:
     def all_student(self):
         if not self.students:
             print("暂无学生信息")
-            return 
+            return None
         for stu in self.students.values():
             print(stu)
     def run(self):
