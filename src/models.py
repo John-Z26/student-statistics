@@ -32,15 +32,23 @@ class StudentSystem:
             print("提示：数据文件内容为空，暂无学生")
             return
         for student in students_data:
+            sid = str(student.get("id") or "").strip() 
+            name = str(student.get("name") or "").strip()
+            if not sid:
+                print("警告：有一条记录缺少学号，已跳过")
+                continue
+            if not name:
+                print(f"警告：学号 {sid} 缺少姓名，已跳过")
+                continue
             try:
-                score = float(student["score"])
-            except(TypeError, ValueError):
-                print(f"警告：学号 {student.get('id')} 的成绩不是数字，已跳过")
+                score = float(student.get("score"))
+            except (TypeError, ValueError):      #清除成绩错误的数据
+                print(f"警告：学号 {sid} 的成绩不是数字，已跳过")
                 continue
-            if not 0 <= score <=100:
-                print(f"警告：学号 {student.get('id')} 的成绩 {score:g} 不在0~100之间，已跳过")
+            if not 0 <= score <=100:    
+                print(f"警告：学号 {sid} 的成绩 {score:g} 不在0~100之间，已跳过")
                 continue
-            self.students[student["id"]] = Students(student["id"],student["name"],score)
+            self.students[sid] = Students(sid,name,score)
         print(f"学生信息加载成功,共 {len(self.students)} 条")
     def max_score(self):    #最高分
         if not self.students:
