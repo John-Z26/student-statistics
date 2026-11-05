@@ -13,11 +13,35 @@ class StudentSystem:
         self.students = {}
         self.load_students_data()
     def load_students_data(self):   #加载学生信息
-        with open('data/students.json','r',encoding="utf-8")as f:
-            students_data = json.load(f)
-            for student in students_data:
-                self.students[student["id"]] = Students(student["id"],student["name"],student["score"])
-            print("学生信息加载成功")
+        try:    #文件读取的异常处理
+            with open('data/students.json','r',encoding="utf-8")as f:
+                students_data = json.load(f)
+        except FileNotFoundError:   #找不到文件
+            print("错误：找不到数据文件 data/students.json，请检查路径")
+            return
+        except json.JSONDecodeError as e:   #文件为空或格式错误
+            if e.pos == 0:
+                print("错误:数据文件是空的(0 字节)，请先填入数据")
+            else:
+                print(f"错误:JSON 格式错误，第 {e.lineno} 行第 {e.colno} 列：{e.msg}")
+            return
+        except PermissionError:     #文件被占用
+            print("错误：没有权限读取数据文件")
+            return
+        if not students_data:   #文件为空
+            print("提示：数据文件内容为空，暂无学生")
+            return
+        for student in students_data:
+            try:
+                score = float(student["score"])
+            except(TypeError, ValueError):
+                print(f"警告：学号 {student.get('id')} 的成绩不是数字，已跳过")
+                continue
+            if not 0 <= score <=100:
+                print(f"警告：学号 {student.get('id')} 的成绩 {score:g} 不在0~100之间，已跳过")
+                continue
+            self.students[student["id"]] = Students(student["id"],student["name"],score)
+        print(f"学生信息加载成功,共 {len(self.students)} 条")
     def max_score(self):    #最高分
         if not self.students:
             print("暂无学生信息")
