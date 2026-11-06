@@ -6,7 +6,7 @@ class Students:
         self.name = name
         self.score = score
     def __str__(self):
-        return f"学号：{self.id},姓名：{self.name},成绩：{self.score}"
+        return f"学号：{self.id},姓名：{self.name},成绩：{self.score:g}"
 #教务系统类
 class StudentSystem:
     def __init__(self):
@@ -60,7 +60,7 @@ class StudentSystem:
         for stu in self.students.values():           
             if stu.score > max_stu.score:           
                 max_stu = stu                   
-        print(f"最高分:{max_stu}") 
+        print(f"最高分:{max_stu.score:g}") 
         return max_stu
     def min_score(self):    #最低分
         if not self.students:
@@ -70,7 +70,7 @@ class StudentSystem:
         for stu in self.students.values():
             if stu.score < min_stu.score:
                 min_stu = stu
-        print(f"最低分:{min_stu}")
+        print(f"最低分:{min_stu.score:g}")
         return min_stu
     def avg_score(self):    #平均分
         if not self.students:
@@ -79,8 +79,9 @@ class StudentSystem:
         total = 0
         for stu in self.students.values():
             total += stu.score
-        print(f"平均分：{total/len(self.students)}") 
-        return total/len(self.students)
+        avg = total/len(self.students)
+        print(f"平均分：{avg}") 
+        return avg
     def pass_num(self):     #及格人数
         if not self.students:
             print("暂无学生信息")
@@ -102,19 +103,47 @@ class StudentSystem:
                 break
         else:
             print("未查询到该学生，请重新输入") 
-    def all_student(self):
+    def all_student(self):      #输出所有学生信息
         if not self.students:
             print("暂无学生信息")
             return None
         for stu in self.students.values():
             print(stu)
+    def save_report(self):  #生成报告
+        if not self.students:
+            print("暂无学生数据，无法导出")
+            return
+        print("正在生成统计报告…")
+        avg = self.avg_score()      
+        top = self.max_score()
+        low = self.min_score()
+        passed = self.pass_num()
+        try:
+            with open("output/report.txt","w",encoding="utf-8") as f:
+                f.write("学生成绩统计报告\n")
+                f.write("="*20+"\n")
+                f.write(f"学生总人数:{len(self.students)}\n")
+                f.write(f"及格人数:{passed}\n")
+                f.write(f"平均分:{avg:.2f}\n")
+                f.write(f"最高分:{top.name} {top.score:g}\n")
+                f.write(f"最低分:{low.name} {low.score:g}\n")
+        except FileNotFoundError:
+            print("错误:output 目录不存在，请先在项目里新建 output 文件夹")
+            return
+        print("统计报告已存入 output/report.txt")
     def run(self):
         print("欢迎使用教务系统~")
         while True:
             print()
-            print("1.查询考试平均分2.查询考试最高分和最低分3.查询及格人数4.查询指定学生成绩5.查询所有学生成绩6.退出系统")
+            print("""1.查询考试平均分
+2.查询考试最高分和最低分
+3.查询及格人数
+4.查询指定学生成绩
+5.查询所有学生成绩
+6.输出并打印统计结果
+7.退出系统""")
             print()
-            choice = input("请输入您的操作(1-6):").strip()
+            choice = input("请输入您的操作(1-7):").strip()
             match choice:
                 case "1":
                     self.avg_score()
@@ -131,6 +160,8 @@ class StudentSystem:
                 case "5":
                     self.all_student()
                 case "6":
+                    self.save_report()
+                case "7":
                     print("本次使用结束")
                     break
                 case _:
