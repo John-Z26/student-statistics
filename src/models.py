@@ -86,7 +86,7 @@ class StudentSystem:
         for stu in self.students.values():
             total += stu.score
         avg = total/len(self.students)
-        print(f"平均分：{avg}") 
+        print(f"平均分：{avg:.2f}") 
         return avg
     def pass_num(self):     #及格人数
         if not self.students:
