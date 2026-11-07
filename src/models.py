@@ -51,7 +51,7 @@ class StudentSystem:
             if sid in self.students:
                 print(f"警告：学号 {sid} 重复，后一条覆盖前一条")
             self.students[sid] = Students(sid,name,score)
-        print(f"学生信息加载成功,共 {len(self.students)} 条")
+        print(f"学生信息加载完成，共 {len(self.students)} 条有效记录")
     def max_score(self):    #最高分
         if not self.students:
             print("暂无学生信息")
@@ -132,6 +132,9 @@ class StudentSystem:
             return
         print("统计报告已存入 output/report.txt")
     def run(self):
+        if not self.students:   #数据为空或加载失败，不进入菜单
+            print("没有可用的学生数据，程序退出。请检查 data/students.json 后重新运行。")
+            return
         print("欢迎使用教务系统~")
         while True:
             print()
