@@ -28,10 +28,16 @@ class StudentSystem:
         except PermissionError:     #文件被占用
             print("错误：没有权限读取数据文件")
             return
+        if type(students_data) != list:     #文件数据格式不对
+            print("错误：数据格式不对，最外层应该是 [ ] 数组")
+            return
         if not students_data:   #文件为空
             print("提示：数据文件内容为空，暂无学生")
             return
         for student in students_data:
+            if type(student) != dict:   #对象格式不对
+                print("警告：有一条记录不是 { } 对象，已跳过")
+                continue
             sid = str(student.get("id") or "").strip() 
             name = str(student.get("name") or "").strip()
             if not sid:
