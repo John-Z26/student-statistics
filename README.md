@@ -20,7 +20,7 @@
 在项目根目录执行：
 
 ```bash
-cd Student_statistics
+cd student_statistics
 python src/run.py
 ```
 
