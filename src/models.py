@@ -1,4 +1,5 @@
 import json
+import os
 #学生类
 class Students:
     def __init__(self,id,name,score):
@@ -125,6 +126,7 @@ class StudentSystem:
         low = self.min_score()
         passed = self.pass_num()
         try:
+            os.makedirs("output", exist_ok=True)
             with open("output/report.txt","w",encoding="utf-8") as f:
                 f.write("学生成绩统计报告\n")
                 f.write("="*20+"\n")
@@ -133,8 +135,8 @@ class StudentSystem:
                 f.write(f"平均分:{avg:.2f}\n")
                 f.write(f"最高分:{top.name} {top.score:g}\n")
                 f.write(f"最低分:{low.name} {low.score:g}\n")
-        except FileNotFoundError:
-            print("错误:output 目录不存在，请先在项目里新建 output 文件夹")
+        except OSError as e:                            # FileNotFoundError → OSError
+            print(f"错误:写入报告失败：{e}")
             return
         print("统计报告已存入 output/report.txt")
     def run(self):
