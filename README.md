@@ -1,5 +1,7 @@
 # 学生成绩统计系统
 
+> 当前版本：v0.1
+
 一个命令行工具：从 JSON 文件读取学生成绩，统计平均分、最高最低分和
 及格人数，支持按学号查询，并可将结果导出为文本报告。
 
@@ -8,20 +10,34 @@
 - 从 `data/students.json` 加载学生数据
 - 自动校验每条记录：学号、姓名不能为空，成绩须为 0~100 的数字
 - 非法记录自动跳过并给出警告，不影响其余数据加载
-- 文件缺失、数据为空或 JSON 格式错误时给出明确提示，程序不会因数据文件问题崩溃
+- 文件缺失、数据为空或 JSON 格式错误时给出明确提示，程序不会崩溃
+- 仅支持 UTF-8 编码的数据文件（其他编码会抛 `UnicodeDecodeError`，见「已知限制」）
 - 统计平均分、最高分、最低分、及格人数（及格线 60）
-- 按学号查询某个学生的成绩
-- 一键把统计结果导出为文本报告
+- 按学号查询某个学生的成绩（查不到时提示“未查询到该学生，请重新输入”）
+- 通过菜单导出统计结果到 `output/report.txt`
 
 ## 运行方式
 
-环境：Python 3.10 及以上（使用了 match 语句），不需要安装第三方库。
-可用 `python --version` 确认版本；Windows 若提示找不到 python，改用 `py -3`。
+环境：Python **3.10 及以上**。代码使用了 `match` 语句，3.9 及以下会直接报错
+`SyntaxError: invalid syntax` —— 是文件根本解析不了，不是运行出错。
+可用 `python --version` 确认版本；Windows 若要精确指定版本，用 `py -3.14 -V`
+这种写法（`py -0` 可列出本机所有已安装的 Python 版本）。
+
+运行程序**不需要任何第三方库**，只用 Python 标准库。
+
+`requirements.txt` 中列出的是**开发依赖**（`pytest`，用于将来编写自动化测试），
+当前仓库暂无测试用例，运行程序无需安装。
 
 ```bash
 git clone https://github.com/John-Z26/student-statistics.git
 cd student-statistics
+
+# 可选但推荐：建独立环境（固定 Python 版本）
+py -3.14 -m venv .venv
+.venv\Scripts\Activate.ps1     # PowerShell；Git Bash 用 source .venv/Scripts/activate
+
 python src/run.py
+
 ```
 
 > 注意：必须在项目根目录运行，程序使用相对路径读取 `data/students.json`。
@@ -33,16 +49,16 @@ python src/run.py
 
 ```json
 [
-{
-"id": "2026001",
-"name": "Alice",
-"score": 92
-},
-{
-"id": "2026002",
-"name": "Bob",
-"score": 76
-}
+   {
+      "id": "2026001",
+      "name": "Alice",
+      "score": 92
+   },
+   {
+      "id": "2026002",
+      "name": "Bob",
+      "score": 76
+   }
 ]
 ```
 
@@ -104,7 +120,7 @@ python src/run.py
 
 ## 如何测试
 
-目前暂无自动化测试，可按以下步骤手工验收：
+本节为手工验收步骤，按顺序执行可覆盖全部功能与异常分支：
 
 1. 把「数据格式」中的验证数据替换进 `data/students.json`
 2. 在项目根目录运行 `python src/run.py`
@@ -119,6 +135,22 @@ python src/run.py
    （若是下载 ZIP 获取的，改回第 1 步前备份的内容）
 6. 重新运行 `python src/run.py` 并选择菜单 6，
    检查 `output/report.txt` 是否自动生成、内容是否与「输出示例」一致
+
+## 项目结构
+
+```text
+student-statistics/
+├── src/
+│   ├── run.py           # 程序入口，创建 StudentSystem 并调用 run()
+│   └── models.py        # Students 类（单条记录）/ StudentSystem 类（业务逻辑）
+├── data/
+│   └── students.json    # 学生数据（输入文件，手动维护）
+├── output/              # 运行后自动创建
+│   └── report.txt       # 统计报告（生成物，可随时删除）
+├── requirements.txt     # 依赖清单（运行程序无需第三方库）
+├── .gitignore
+└── README.md
+```
 
 ## 已知限制
 
